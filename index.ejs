@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= profile.name %> — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<!-- ░░ NAVBAR ░░ -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">
+      <span class="brand-dot"></span><%= profile.name.split(' ')[0] %>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="#perfil">Perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="#album">Álbumes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contactos">Contactos</a></li>
+        <li class="nav-item">
+          <a class="nav-link fav-nav-btn" href="#favoritos">
+            <i class="bi bi-bookmark-heart-fill"></i>
+            Favoritos <span class="fav-badge" id="favCount">0</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ░░ HERO / PERFIL ░░ -->
+<section id="perfil" class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5 text-center">
+        <div class="profile-frame mx-auto">
+          <img src="<%= profile.avatar %>" alt="Foto de perfil" class="profile-img"/>
+          <div class="profile-ring"></div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <p class="overline">Portfolio Personal</p>
+        <h1 class="display-name"><%= profile.name %></h1>
+        <p class="role-tag"><%= profile.role %></p>
+        <p class="bio-text"><%= profile.bio %></p>
+        <p class="location-tag"><i class="bi bi-geo-alt-fill me-1"></i><%= profile.location %></p>
+        <div class="stats-row mt-4">
+          <div class="stat-item">
+            <span class="stat-num"><%= profile.stats.fotos %></span>
+            <span class="stat-label">Fotos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num"><%= profile.stats.álbumes %></span>
+            <span class="stat-label">Álbumes</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num"><%= profile.stats.seguidores.toLocaleString() %></span>
+            <span class="stat-label">Seguidores</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ ÁLBUMES ░░ -->
+<section id="album" class="section-block">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Galería</span>
+      <h2 class="section-title">Álbumes de fotos</h2>
+    </div>
+
+    <!-- Album Tabs -->
+    <ul class="nav album-tabs mb-5" id="albumTabs">
+      <% albums.forEach((album, i) => { %>
+      <li class="nav-item">
+        <button class="album-tab-btn <%= i===0?'active':'' %>" data-album="<%= album.id %>">
+          <%= album.title %>
+        </button>
+      </li>
+      <% }) %>
+    </ul>
+
+    <!-- Album Panels -->
+    <% albums.forEach((album, i) => { %>
+    <div class="album-panel <%= i===0?'active':'' %>" id="panel-<%= album.id %>">
+      <p class="album-desc mb-4"><%= album.description %></p>
+      <div class="row g-4">
+        <% album.photos.forEach(photo => { %>
+        <div class="col-md-4">
+          <div class="photo-card">
+            <div class="photo-img-wrap">
+              <img src="<%= photo.url %>" alt="<%= photo.title %>" loading="lazy"/>
+              <div class="photo-overlay">
+                <button class="btn-overlay fav-btn"
+                        data-photo-id="<%= photo.id %>"
+                        data-album-id="<%= album.id %>"
+                        data-photo-url="<%= photo.url %>"
+                        data-photo-title="<%= photo.title %>"
+                        title="Guardar en favoritos">
+                  <i class="bi bi-bookmark-plus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="photo-info">
+              <p class="photo-title"><%= photo.title %></p>
+              <div class="like-row">
+                <button class="like-btn" data-photo-id="<%= photo.id %>" data-liked="false">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <span class="like-count" id="likes-<%= photo.id %>"><%= photo.likes %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</section>
+
+<!-- ░░ CONTACTOS (AJAX) ░░ -->
+<section id="contactos" class="section-block section-alt">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Red</span>
+      <h2 class="section-title">Contactos</h2>
+    </div>
+    <div class="search-wrap">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" id="contactSearch" class="contact-search" placeholder="Buscar contacto..."/>
+      <div class="search-spinner" id="searchSpinner"></div>
+    </div>
+    <div class="row g-4 mt-2" id="contactsGrid">
+      <!-- Llenado por AJAX -->
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FAVORITOS ░░ -->
+<section id="favoritos" class="section-block">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag">Guardados</span>
+      <h2 class="section-title">Mis Favoritos</h2>
+    </div>
+    <div id="favoritosGrid" class="row g-4">
+      <div class="col-12 text-center empty-fav" id="emptyFav">
+        <i class="bi bi-bookmark-heart display-4 mb-3 d-block opacity-25"></i>
+        <p class="opacity-50">Aún no has guardado ninguna foto.<br>Pulsa <i class="bi bi-bookmark-plus"></i> en cualquier imagen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="site-footer">
+  <p>&copy; 2025 <%= profile.name %> — Hecho con <i class="bi bi-heart-fill text-danger"></i> Node.js + Express + EJS</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast-msg" id="toastMsg"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
